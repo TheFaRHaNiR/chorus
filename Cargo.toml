@@ -21,7 +21,6 @@ crossbeam-channel = "0.5.15"
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1.0.140"
-serde_repr = "0.1.20"
 toml = "1.1.0"
 chrono = "0.4"
 strum = "0.28.0"
@@ -30,11 +29,10 @@ rand = "0.10.0"
 vek = "0.17.1"
 
 jsonwebtoken = { version = "10.3.0", features = ["rust_crypto", "p384"] }
-reqwest = { version = "0.13.2", features = ["json", "blocking"] }
 base64 = "0.22.1"
 p384 = { version = "0.14.0-rc.8", features = ["ecdh", "ecdsa"] }
 
-bedrockrs = { git = "https://github.com/bedrock-crustaceans/bedrockrs", branch = "main", features = ["full", "proto-unknown"] }
+bedrockrs = { git = "https://github.com/bedrock-crustaceans/bedrockrs", branch = "main", features = ["full", "proto-unknown", "proto-v944"] }
 nbtx = { git = "https://github.com/bedrock-crustaceans/nbtx" }
 uuid = { version = "1.16.0", features = ["v4"] }
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
