@@ -3,7 +3,7 @@ use crate::network::handler::login::handle_login;
 use crate::network::handler::request::handle_request;
 use crate::network::handler::resource::handle_resource;
 use crate::network::handler::setup::{handle_setup, on_enter_setup};
-use bedrockrs::proto::V944;
+use bedrock::protocol::V944;
 use bevy_app::{App, FixedUpdate, Plugin};
 use bevy_ecs::prelude::{Entity, Message};
 use bevy_ecs::schedule::IntoScheduleConfigs;

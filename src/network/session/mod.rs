@@ -1,11 +1,11 @@
 use crate::network::session::state::{SessionState, SessionStateChangedMessage};
-use bedrockrs::network::compression::Compression;
-use bedrockrs::network::connection::Connection;
-use bedrockrs::network::encryption::Encryption;
-use bedrockrs::proto::v662::enums::{ConnectionFailReason, PlayStatus};
-use bedrockrs::proto::v662::packets::PlayStatusPacket;
-use bedrockrs::proto::v712::packets::{DisconnectMessage, DisconnectPacket};
-use bedrockrs::proto::{Unknown, V944};
+use bedrock::network::compression::Compression;
+use bedrock::network::connection::Connection;
+use bedrock::network::encryption::Encryption;
+use bedrock::protocol::v662::enums::{ConnectionFailReason, PlayStatus};
+use bedrock::protocol::v662::packets::PlayStatusPacket;
+use bedrock::protocol::v712::packets::{DisconnectMessage, DisconnectPacket};
+use bedrock::protocol::{Unknown, V944};
 use bevy_ecs::prelude::{Component, Entity, MessageWriter};
 use bevy_tasks::futures::now_or_never;
 use std::mem::take;

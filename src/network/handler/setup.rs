@@ -3,16 +3,16 @@ use crate::network::session::Session;
 use crate::network::session::state::{SessionState, SessionStateChangedMessage};
 use crate::player::Player;
 use crate::server::ServerState;
-use bedrockrs::proto::v662::enums::{
+use bedrock::protocol::v662::enums::{
     ChatRestrictionLevel, Difficulty, EditorWorldType, EducationEditionOffer, GamePublishSetting, GameType, GeneratorType, PlayStatus, PlayerPermissionLevel, SpawnBiomeType,
 };
-use bedrockrs::proto::v662::packets::{LevelChunkPacket, NetworkChunkPublisherUpdatePacket};
-use bedrockrs::proto::v662::types::{ActorRuntimeID, ActorUniqueID, BaseGameVersion, BlockPos, ChunkPos, EduSharedUriResource, Experiments, NetworkPermissions, SpawnSettings};
-use bedrockrs::proto::v818::types::SyncedPlayerMovementSettings;
-use bedrockrs::proto::v924::types::{GameRuleLegacyData, LevelSettings};
-use bedrockrs::proto::v944::packets::{StartGamePacket, VoxelShapesPacket};
-use bedrockrs::proto::v944::types::NetworkBlockPosition;
-use bedrockrs::proto::{ProtoVersion, ProtoVersionPackets, V944};
+use bedrock::protocol::v662::packets::{LevelChunkPacket, NetworkChunkPublisherUpdatePacket};
+use bedrock::protocol::v662::types::{ActorRuntimeID, ActorUniqueID, BaseGameVersion, BlockPos, ChunkPos, EduSharedUriResource, Experiments, NetworkPermissions, SpawnSettings};
+use bedrock::protocol::v818::types::SyncedPlayerMovementSettings;
+use bedrock::protocol::v924::types::{GameRuleLegacyData, LevelSettings};
+use bedrock::protocol::v944::packets::{StartGamePacket, VoxelShapesPacket};
+use bedrock::protocol::v944::types::NetworkBlockPosition;
+use bedrock::protocol::{ProtoVersion, ProtoVersionPackets, V944};
 use bevy_ecs::message::{MessageReader, MessageWriter};
 use bevy_ecs::prelude::{Commands, Query};
 use bevy_ecs::system::ResMut;

@@ -32,7 +32,7 @@ jsonwebtoken = { version = "10.3.0", features = ["rust_crypto", "p384"] }
 base64 = "0.22.1"
 p384 = { version = "0.14.0-rc.8", features = ["ecdh", "ecdsa"] }
 
-bedrockrs = { git = "https://github.com/bedrock-crustaceans/bedrockrs", branch = "main", features = ["full", "proto-unknown", "proto-v944"] }
+bedrock = { git = "https://github.com/bedrock-crustaceans/bedrock-rs", branch = "main", features = ["full", "protocol-unknown", "protocol-v944"] }
 nbtx = { git = "https://github.com/bedrock-crustaceans/nbtx" }
 uuid = { version = "1.16.0", features = ["v4"] }
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }

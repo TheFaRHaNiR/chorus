@@ -3,8 +3,8 @@
 // use crate::level::biome::biome_id::BiomeID;
 // use crate::level::bit_array::bit_array_version::BitArrayVersion;
 // use crate::level::palette::palette::Palette;
-// use bedrockrs::proto::ProtoCodec;
-// use bedrockrs::proto::error::ProtoCodecError;
+// use bedrock::protocol::ProtoCodec;
+// use bedrock::protocol::error::ProtoCodecError;
 // use std::io::{Read, Write};
 // use std::sync::atomic::{AtomicI64, Ordering};
 //

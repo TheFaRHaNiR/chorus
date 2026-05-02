@@ -1,10 +1,10 @@
 use crate::network::handler::PacketReceivedMessage;
 use crate::network::session::Session;
 use crate::network::session::state::{SessionState, SessionStateChangedMessage};
-use bedrockrs::network::compression::Compression;
-use bedrockrs::proto::v662::enums::{PacketCompressionAlgorithm, PlayStatus};
-use bedrockrs::proto::v662::packets::NetworkSettingsPacket;
-use bedrockrs::proto::{ProtoVersion, V944};
+use bedrock::network::compression::Compression;
+use bedrock::protocol::v662::enums::{PacketCompressionAlgorithm, PlayStatus};
+use bedrock::protocol::v662::packets::NetworkSettingsPacket;
+use bedrock::protocol::{ProtoVersion, V944};
 use bevy_ecs::message::MessageReader;
 use bevy_ecs::prelude::MessageWriter;
 use bevy_ecs::system::Query;

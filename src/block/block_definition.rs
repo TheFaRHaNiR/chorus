@@ -51,7 +51,7 @@ impl BlockDefinition {
         Self {
             identifier: CowArc::Owned(Arc::from(identifier.as_ref())),
             states: CowArc::Owned(states.into_iter().map(|v| CowArc::Owned(Arc::new(v))).collect::<Vec<_>>().into()),
-            components: CowArc::Owned(components.into_iter().map(|c| CowArc::Owned(c)).collect::<Vec<_>>().into()),
+            components: CowArc::Owned(components.into_iter().map(CowArc::Owned).collect::<Vec<_>>().into()),
             permutations: CowArc::Owned(permutations.into_iter().map(|p| CowArc::Owned(Arc::new(p))).collect::<Vec<_>>().into()),
         }
     }
@@ -151,7 +151,7 @@ impl BlockPermutationDefinition {
     pub fn new(condition: fn(&HashMap<CowArc<'static, str>, BlockState>) -> bool, components: impl IntoIterator<Item = Arc<dyn BlockComponent>>) -> Self {
         Self {
             condition,
-            components: CowArc::Owned(components.into_iter().map(|c| CowArc::Owned(c)).collect::<Vec<_>>().into()),
+            components: CowArc::Owned(components.into_iter().map(CowArc::Owned).collect::<Vec<_>>().into()),
         }
     }
 }

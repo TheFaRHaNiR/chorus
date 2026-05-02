@@ -2,8 +2,8 @@
 // use crate::level::bit_array::bit_array::{BitArray, BitArrayTrait};
 // use crate::level::bit_array::bit_array_version::BitArrayVersion;
 // use crate::level::sub_chunk::SubChunk;
-// use bedrockrs::proto::error::ProtoCodecError;
-// use bedrockrs::proto::{ProtoCodec, ProtoCodecLE, ProtoCodecVAR};
+// use bedrock::protocol::error::ProtoCodecError;
+// use bedrock::protocol::{ProtoCodec, ProtoCodecLE, ProtoCodecVAR};
 // use std::io::{Read, Write};
 //
 // pub struct Palette<V: PartialEq> {

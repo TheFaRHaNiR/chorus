@@ -1,4 +1,4 @@
-use bedrockrs::auth::auth_oidc::AuthOIDC;
+use bedrock::auth::auth_oidc::AuthOIDC;
 use bevy_app::{App, Plugin, Startup};
 use bevy_ecs::prelude::{Commands, Resource};
 use tracing::debug;

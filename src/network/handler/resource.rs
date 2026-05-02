@@ -2,12 +2,12 @@ use crate::config::Config;
 use crate::network::handler::PacketReceivedMessage;
 use crate::network::session::Session;
 use crate::network::session::state::{SessionState, SessionStateChangedMessage};
-use bedrockrs::proto::v662::enums::ResourcePackResponse;
-use bedrockrs::proto::v662::packets::ResourcePackChunkDataPacket;
-use bedrockrs::proto::v662::types::{BaseGameVersion, Experiments};
-use bedrockrs::proto::v818::packets::ResourcePacksInfoPacket;
-use bedrockrs::proto::v898::packets::ResourcePackStackPacket;
-use bedrockrs::proto::{ProtoVersionPackets, V944};
+use bedrock::protocol::v662::enums::ResourcePackResponse;
+use bedrock::protocol::v662::packets::ResourcePackChunkDataPacket;
+use bedrock::protocol::v662::types::{BaseGameVersion, Experiments};
+use bedrock::protocol::v818::packets::ResourcePacksInfoPacket;
+use bedrock::protocol::v898::packets::ResourcePackStackPacket;
+use bedrock::protocol::{ProtoVersionPackets, V944};
 use bevy_ecs::message::MessageReader;
 use bevy_ecs::prelude::{MessageWriter, ParamSet, Query, Res};
 

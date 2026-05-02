@@ -1,7 +1,7 @@
 use crate::network::handler::PacketReceivedMessage;
 use crate::network::session::Session;
 use crate::network::session::state::{SessionState, SessionStateChangedMessage};
-use bedrockrs::proto::V944;
+use bedrock::protocol::V944;
 use bevy_ecs::message::MessageReader;
 use bevy_ecs::prelude::{MessageWriter, Query};
 

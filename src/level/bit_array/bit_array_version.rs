@@ -80,12 +80,6 @@ impl BitArrayVersion {
     }
 
     pub fn get(version: u8, read: bool) -> Option<&'static BitArrayVersion> {
-        for ver in Self::VALUES.iter() {
-            if (!read && ver.entries_per_word <= version) || (read && ver.bits == version) {
-                return Some(ver);
-            }
-        }
-
-        None
+        Self::VALUES.iter().find(|&ver| (!read && ver.entries_per_word <= version) || (read && ver.bits == version)).map(|v| *v)
     }
 }
