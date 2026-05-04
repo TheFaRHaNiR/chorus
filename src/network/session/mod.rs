@@ -1,5 +1,5 @@
-use crate::network::session::state::{SessionState, SessionStateChangedMessage};
 use crate::network::BedrockProtocol;
+use crate::network::session::state::{SessionState, SessionStateChangedMessage};
 use bedrock::network::compression::Compression;
 use bedrock::network::connection::Connection;
 use bedrock::network::encryption::Encryption;
