@@ -1,7 +1,7 @@
+use crate::network::BedrockProtocol;
 use crate::network::handler::PacketReceivedMessage;
 use crate::network::session::Session;
 use crate::network::session::state::{SessionState, SessionStateChangedMessage};
-use bedrock::protocol::V944;
 use bevy_ecs::message::MessageReader;
 use bevy_ecs::prelude::{MessageWriter, Query};
 
@@ -15,7 +15,7 @@ pub fn handle_handshake(mut reader: MessageReader<PacketReceivedMessage>, mut wr
             continue;
         };
 
-        let V944::ClientToServerHandshakePacket(_) = &ev.packet else {
+        let BedrockProtocol::ClientToServerHandshakePacket(_) = &ev.packet else {
             continue;
         };
 

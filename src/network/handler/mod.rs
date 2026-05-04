@@ -1,9 +1,9 @@
+use crate::network::BedrockProtocol;
 use crate::network::handler::handshake::handle_handshake;
 use crate::network::handler::login::handle_login;
 use crate::network::handler::request::handle_request;
 use crate::network::handler::resource::handle_resource;
 use crate::network::handler::setup::{handle_setup, on_enter_setup};
-use bedrock::protocol::V944;
 use bevy_app::{App, FixedUpdate, Plugin};
 use bevy_ecs::prelude::{Entity, Message};
 use bevy_ecs::schedule::IntoScheduleConfigs;
@@ -17,7 +17,7 @@ pub mod setup;
 #[derive(Message)]
 pub struct PacketReceivedMessage {
     pub entity: Entity,
-    pub packet: V944,
+    pub packet: BedrockProtocol,
 }
 
 pub struct PacketHandlers;

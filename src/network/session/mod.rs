@@ -1,11 +1,12 @@
 use crate::network::session::state::{SessionState, SessionStateChangedMessage};
+use crate::network::BedrockProtocol;
 use bedrock::network::compression::Compression;
 use bedrock::network::connection::Connection;
 use bedrock::network::encryption::Encryption;
+use bedrock::protocol::Unknown;
 use bedrock::protocol::v662::enums::{ConnectionFailReason, PlayStatus};
 use bedrock::protocol::v662::packets::PlayStatusPacket;
 use bedrock::protocol::v712::packets::{DisconnectMessage, DisconnectPacket};
-use bedrock::protocol::{Unknown, V944};
 use bevy_ecs::prelude::{Component, Entity, MessageWriter};
 use bevy_tasks::futures::now_or_never;
 use std::mem::take;
@@ -18,7 +19,7 @@ pub mod state;
 
 pub enum ConnectionEvent {
     Recv,
-    Send(Vec<V944>),
+    Send(Vec<BedrockProtocol>),
     SetCompression(Option<Compression>),
     // box here otherwise it blows up the enum size (2080+ bytes)
     SetEncryption(Option<Box<Encryption>>),
@@ -31,8 +32,8 @@ pub struct Session {
     closed: bool,
     state: SessionState,
 
-    out_q: Vec<V944>,
-    inc_rx: UnboundedReceiver<V944>,
+    out_q: Vec<BedrockProtocol>,
+    inc_rx: UnboundedReceiver<BedrockProtocol>,
 
     conn_tx: UnboundedSender<ConnectionEvent>,
     conn_task: JoinHandle<()>,
@@ -40,10 +41,10 @@ pub struct Session {
 
 impl Session {
     pub fn new(entity: Entity, conn: Connection<Unknown>, runtime: &tokio::runtime::Runtime) -> Self {
-        let (inc_tx, inc_rx) = tokio::sync::mpsc::unbounded_channel::<V944>();
+        let (inc_tx, inc_rx) = tokio::sync::mpsc::unbounded_channel::<BedrockProtocol>();
         let (conn_tx, mut conn_rx) = tokio::sync::mpsc::unbounded_channel::<ConnectionEvent>();
 
-        let mut conn: Connection<V944> = conn.into_ver();
+        let mut conn: Connection<BedrockProtocol> = conn.into_ver();
 
         let conn_task = runtime.spawn(async move {
             'l: loop {
@@ -109,11 +110,11 @@ impl Session {
         }
     }
 
-    pub fn send_immediate(&self, packet: V944) {
+    pub fn send_immediate(&self, packet: BedrockProtocol) {
         _ = self.conn_tx.send(ConnectionEvent::Send(vec![packet]));
     }
 
-    pub fn send(&mut self, packet: V944) {
+    pub fn send(&mut self, packet: BedrockProtocol) {
         self.out_q.push(packet);
     }
 
@@ -125,7 +126,7 @@ impl Session {
         _ = self.conn_tx.send(ConnectionEvent::Recv);
     }
 
-    pub fn recv(&mut self) -> Option<V944> {
+    pub fn recv(&mut self) -> Option<BedrockProtocol> {
         match self.inc_rx.try_recv() {
             Ok(packet) => Some(packet),
             Err(TryRecvError::Empty) => None,
@@ -168,13 +169,16 @@ impl Session {
         }
 
         if let Some(reason) = reason {
-            self.send_immediate(V944::DisconnectPacket(DisconnectPacket {
-                reason: ConnectionFailReason::Disconnected,
-                message: Some(DisconnectMessage {
-                    kick_message: reason.to_string(),
-                    filtered_message: reason.to_string(),
-                }),
-            }));
+            self.send_immediate(BedrockProtocol::DisconnectPacket(
+                DisconnectPacket {
+                    reason: ConnectionFailReason::Disconnected,
+                    message: Some(DisconnectMessage {
+                        kick_message: reason.to_string(),
+                        filtered_message: reason.to_string(),
+                    }),
+                }
+                .into(),
+            ));
         }
 
         self.closed = true;
@@ -191,10 +195,11 @@ impl Session {
     pub fn send_play_status(&mut self, status: PlayStatus, immediate: bool) {
         debug!("Sending play status: {:?}", status);
 
+        let packet = BedrockProtocol::PlayStatusPacket(PlayStatusPacket { status }.into());
         if immediate {
-            self.send_immediate(V944::PlayStatusPacket(PlayStatusPacket { status }));
+            self.send_immediate(packet);
         } else {
-            self.send(V944::PlayStatusPacket(PlayStatusPacket { status }))
+            self.send(packet);
         }
     }
 }

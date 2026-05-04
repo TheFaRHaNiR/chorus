@@ -1,4 +1,5 @@
 use crate::config::Config;
+use crate::network::BedrockProtocol;
 use crate::network::handler::PacketReceivedMessage;
 use crate::network::login::auth::Auth;
 use crate::network::login::encryption::get_handshake_jwt;
@@ -8,9 +9,9 @@ use base64::Engine;
 use base64::prelude::BASE64_STANDARD;
 use bedrock::auth::auth_identity::{AuthData, AuthDataClaims};
 use bedrock::network::encryption::Encryption;
+use bedrock::protocol::ProtoCodecLE;
 use bedrock::protocol::v662::enums::PlayStatus;
 use bedrock::protocol::v662::packets::ServerToClientHandshakePacket;
-use bedrock::protocol::{ProtoCodecLE, V944};
 use bevy_ecs::message::MessageReader;
 use bevy_ecs::prelude::{MessageWriter, Query, Res};
 use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode};
@@ -37,7 +38,7 @@ pub fn handle_login(
             continue;
         }
 
-        let V944::LoginPacket(packet) = &ev.packet else {
+        let BedrockProtocol::LoginPacket(packet) = &ev.packet else {
             continue;
         };
 
@@ -62,7 +63,7 @@ pub fn handle_login(
                 continue;
             };
 
-            session.send_immediate(V944::ServerToClientHandshakePacket(ServerToClientHandshakePacket { handshake_web_token: jwt }));
+            session.send_immediate(BedrockProtocol::ServerToClientHandshakePacket(ServerToClientHandshakePacket { handshake_web_token: jwt }.into()));
 
             session.set_encryption(Some(Encryption::new(&secret, &request.key, &token)));
 

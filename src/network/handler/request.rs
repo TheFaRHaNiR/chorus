@@ -1,10 +1,11 @@
+use crate::network::BedrockProtocol;
 use crate::network::handler::PacketReceivedMessage;
 use crate::network::session::Session;
 use crate::network::session::state::{SessionState, SessionStateChangedMessage};
 use bedrock::network::compression::Compression;
+use bedrock::protocol::ProtoVersion;
 use bedrock::protocol::v662::enums::{PacketCompressionAlgorithm, PlayStatus};
 use bedrock::protocol::v662::packets::NetworkSettingsPacket;
-use bedrock::protocol::{ProtoVersion, V944};
 use bevy_ecs::message::MessageReader;
 use bevy_ecs::prelude::MessageWriter;
 use bevy_ecs::system::Query;
@@ -17,15 +18,15 @@ pub fn handle_request(mut reader: MessageReader<PacketReceivedMessage>, mut writ
                 continue;
             }
 
-            let V944::RequestNetworkSettingsPacket(packet) = &ev.packet else {
+            let BedrockProtocol::RequestNetworkSettingsPacket(packet) = &ev.packet else {
                 continue;
             };
 
             let protocol = packet.client_network_version as u32;
 
-            if protocol != V944::PROTOCOL_VERSION {
+            if protocol != BedrockProtocol::PROTOCOL_VERSION {
                 session.send_play_status(
-                    if protocol < V944::PROTOCOL_VERSION {
+                    if protocol < BedrockProtocol::PROTOCOL_VERSION {
                         PlayStatus::LoginFailedClientOld
                     } else {
                         PlayStatus::LoginFailedServerOld
@@ -33,7 +34,7 @@ pub fn handle_request(mut reader: MessageReader<PacketReceivedMessage>, mut writ
                     true,
                 );
 
-                session.close(if protocol < V944::PROTOCOL_VERSION {
+                session.close(if protocol < BedrockProtocol::PROTOCOL_VERSION {
                     Some("disconnectionScreen.outdatedClient")
                 } else {
                     Some("disconnectionScreen.outdatedServer")
@@ -41,13 +42,16 @@ pub fn handle_request(mut reader: MessageReader<PacketReceivedMessage>, mut writ
             }
 
             // TODO: IP Bans
-            session.send_immediate(V944::NetworkSettingsPacket(NetworkSettingsPacket {
-                compression_threshold: 1,
-                compression_algorithm: PacketCompressionAlgorithm::None,
-                client_throttle_enabled: false,
-                client_throttle_threshold: 0,
-                client_throttle_scalar: 0.0,
-            }));
+            session.send_immediate(BedrockProtocol::NetworkSettingsPacket(
+                NetworkSettingsPacket {
+                    compression_threshold: 1,
+                    compression_algorithm: PacketCompressionAlgorithm::None,
+                    client_throttle_enabled: false,
+                    client_throttle_threshold: 0,
+                    client_throttle_scalar: 0.0,
+                }
+                .into(),
+            ));
 
             session.set_compression(Some(Compression::None));
 

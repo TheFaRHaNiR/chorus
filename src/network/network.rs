@@ -1,11 +1,12 @@
 use crate::config::Config;
+use crate::network::BedrockProtocol;
 use crate::network::handler::{PacketHandlers, PacketReceivedMessage};
 use crate::network::login::auth::LoginAuthOIDC;
 use crate::network::session::Session;
 use crate::network::session::state::SessionStateChangedMessage;
 use bedrock::network::connection::Connection;
 use bedrock::network::listener::Listener;
-use bedrock::protocol::{ProtoVersion, Unknown, V944};
+use bedrock::protocol::{ProtoVersion, Unknown};
 use bevy_app::{App, FixedUpdate, Plugin, Startup};
 use bevy_ecs::prelude::*;
 use crossbeam_channel::Receiver;
@@ -50,9 +51,9 @@ impl Network {
                 ),
                 config.name.clone(),
                 config.sub_name.clone(),
-                String::from(V944::GAME_VERSION),
-                V944::PROTOCOL_VERSION,
-                V944::RAKNET_VERSION,
+                String::from(BedrockProtocol::GAME_VERSION),
+                BedrockProtocol::PROTOCOL_VERSION,
+                BedrockProtocol::RAKNET_VERSION,
                 config.max_players,
                 0,
                 false,
