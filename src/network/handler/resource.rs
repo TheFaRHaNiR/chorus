@@ -62,7 +62,7 @@ fn handle_request(session: &mut Session, _packet: &<BedrockProtocol as ProtoVers
             resource_name: "".to_string(),
             chunk_id: 0,
             byte_offset: 0,
-            chunk_data: "".to_string(),
+            chunk_data: vec![],
         }
         .into(),
     ))
