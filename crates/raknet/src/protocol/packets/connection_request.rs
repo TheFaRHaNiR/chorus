@@ -5,39 +5,17 @@ use std::io::{Error, ErrorKind, Read, Write};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ConnectionRequest {
-    client_guid: u64,
-    client_timestamp: u64,
-    security: bool,
+    pub client_guid: u64,
+    pub client_timestamp: u64,
+    pub security: bool,
 }
 
-impl ConnectionRequest {
-    pub fn new(client_guid: u64, client_timestamp: u64, security: bool) -> Self {
-        Self {
-            client_guid,
-            client_timestamp,
-            security,
-        }
-    }
-
-    pub fn get_client_guid(&self) -> u64 {
-        self.client_guid
-    }
-
-    pub fn get_client_timestamp(&self) -> u64 {
-        self.client_timestamp
-    }
-
-    pub fn get_security(&self) -> bool {
-        self.security
-    }
-}
-
-impl RakCodec for ConnectionRequest {
-    fn serialize<W: Write>(&self, writer: &mut W) -> Result<(), Error> {
+impl RakCodec<ConnectionRequest> for ConnectionRequest {
+    fn serialize<W: Write>(value: &Self, writer: &mut W) -> Result<(), Error> {
         writer.write_u8(CONNECTION_REQUEST)?;
-        writer.write_u64::<BigEndian>(self.client_guid)?;
-        writer.write_u64::<BigEndian>(self.client_timestamp)?;
-        writer.write_u8(self.security as u8)?;
+        writer.write_u64::<BigEndian>(value.client_guid)?;
+        writer.write_u64::<BigEndian>(value.client_timestamp)?;
+        writer.write_u8(value.security as u8)?;
 
         Ok(())
     }
@@ -59,7 +37,7 @@ impl RakCodec for ConnectionRequest {
         })
     }
 
-    fn size_hint(&self) -> usize {
+    fn size_hint(_: &Self) -> usize {
         size_of::<u8>() + size_of::<u64>() + size_of::<u64>() + size_of::<u8>()
     }
 }

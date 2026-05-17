@@ -7,11 +7,11 @@ use std::time::SystemTime;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct FrameSet {
-    sequence: u32,
-    frames: Vec<Frame>,
-    continuous_send: bool,
-    needs_b_and_as: bool,
-    is_pair: bool,
+    pub sequence: u32,
+    pub frames: Vec<Frame>,
+    pub continuous_send: bool,
+    pub needs_b_and_as: bool,
+    pub is_pair: bool,
 
     pub sent: SystemTime,
     pub resend: SystemTime,
@@ -31,23 +31,23 @@ impl FrameSet {
     }
 }
 
-impl RakCodec for FrameSet {
-    fn serialize<W: Write>(&self, writer: &mut W) -> Result<(), Error> {
+impl RakCodec<FrameSet> for FrameSet {
+    fn serialize<W: Write>(value: &Self, writer: &mut W) -> Result<(), Error> {
         let mut flags = VALID;
-        if self.continuous_send {
+        if value.continuous_send {
             flags |= CONTINUOUS_SEND;
         }
-        if self.needs_b_and_as {
+        if value.needs_b_and_as {
             flags |= NEEDS_B_AND_AS;
         }
-        if self.is_pair {
+        if value.is_pair {
             flags |= PAIR;
         }
 
         writer.write_u8(flags)?;
-        writer.write_u24::<LittleEndian>(self.sequence)?;
-        for frame in &self.frames {
-            frame.serialize(writer)?;
+        writer.write_u24::<LittleEndian>(value.sequence)?;
+        for frame in &value.frames {
+            Frame::serialize(&frame, writer)?;
         }
 
         Ok(())
@@ -81,7 +81,7 @@ impl RakCodec for FrameSet {
         Ok(Self::new(sequence, frames, continuous_send, needs_b_and_as, is_pair))
     }
 
-    fn size_hint(&self) -> usize {
-        size_of::<u8>() + 3 + self.frames.iter().fold(0, |acc, frame| acc + frame.size_hint())
+    fn size_hint(value: &Self) -> usize {
+        size_of::<u8>() + 3 + value.frames.iter().fold(0, |acc, frame| acc + Frame::size_hint(&frame))
     }
 }

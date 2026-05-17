@@ -6,14 +6,8 @@ use std::io::{Error, ErrorKind, Read, Write};
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Disconnect;
 
-impl Disconnect {
-    pub fn new() -> Self {
-        Self
-    }
-}
-
-impl RakCodec for Disconnect {
-    fn serialize<W: Write>(&self, writer: &mut W) -> Result<(), Error> {
+impl RakCodec<Disconnect> for Disconnect {
+    fn serialize<W: Write>(_: &Self, writer: &mut W) -> Result<(), Error> {
         writer.write_u8(DISCONNECT)?;
 
         Ok(())
@@ -28,7 +22,7 @@ impl RakCodec for Disconnect {
         Ok(Self)
     }
 
-    fn size_hint(&self) -> usize {
+    fn size_hint(_: &Self) -> usize {
         size_of::<u8>()
     }
 }

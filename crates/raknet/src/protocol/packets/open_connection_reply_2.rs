@@ -17,32 +17,16 @@ impl OpenConnectionReply2 {
     pub fn new(guid: u64, address: SocketAddr, mtu: u16, security: bool) -> Self {
         Self { guid, address, mtu, security }
     }
-
-    pub fn get_guid(&self) -> u64 {
-        self.guid
-    }
-
-    pub fn get_address(&self) -> &SocketAddr {
-        &self.address
-    }
-
-    pub fn get_mtu(&self) -> u16 {
-        self.mtu
-    }
-
-    pub fn get_security(&self) -> bool {
-        self.security
-    }
 }
 
-impl RakCodec for OpenConnectionReply2 {
-    fn serialize<W: Write>(&self, writer: &mut W) -> Result<(), Error> {
+impl RakCodec<OpenConnectionReply2> for OpenConnectionReply2 {
+    fn serialize<W: Write>(value: &Self, writer: &mut W) -> Result<(), Error> {
         writer.write_u8(OPEN_CONNECTION_REPLY_2)?;
         writer.write_all(&MAGIC)?;
-        writer.write_u64::<BigEndian>(self.guid)?;
-        self.address.serialize(writer)?;
-        writer.write_u16::<BigEndian>(self.mtu)?;
-        writer.write_u8(self.security as u8)?;
+        writer.write_u64::<BigEndian>(value.guid)?;
+        SocketAddr::serialize(&value.address, writer)?;
+        writer.write_u16::<BigEndian>(value.mtu)?;
+        writer.write_u8(value.security as u8)?;
 
         Ok(())
     }
@@ -68,7 +52,7 @@ impl RakCodec for OpenConnectionReply2 {
         Ok(Self { guid, address, mtu, security })
     }
 
-    fn size_hint(&self) -> usize {
-        size_of::<u8>() + MAGIC.len() + size_of::<u64>() + self.address.size_hint() + size_of::<u16>() + size_of::<u8>()
+    fn size_hint(value: &Self) -> usize {
+        size_of::<u8>() + MAGIC.len() + size_of::<u64>() + SocketAddr::size_hint(&value.address) + size_of::<u16>() + size_of::<u8>()
     }
 }

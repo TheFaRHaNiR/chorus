@@ -6,48 +6,21 @@ use std::net::SocketAddr;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct NewIncomingConnection {
-    server_address: SocketAddr,
-    internal_addresses: Vec<SocketAddr>,
-    incoming_timestamp: u64,
-    server_timestamp: u64,
+    pub server_address: SocketAddr,
+    pub internal_addresses: Vec<SocketAddr>,
+    pub incoming_timestamp: u64,
+    pub server_timestamp: u64,
 }
 
-impl NewIncomingConnection {
-    pub fn new(server_address: SocketAddr, internal_addresses: Vec<SocketAddr>, incoming_timestamp: u64, server_timestamp: u64) -> Self {
-        Self {
-            server_address,
-            internal_addresses,
-            incoming_timestamp,
-            server_timestamp,
-        }
-    }
-
-    pub fn get_server_address(&self) -> &SocketAddr {
-        &self.server_address
-    }
-
-    pub fn get_internal_addresses(&self) -> &Vec<SocketAddr> {
-        &self.internal_addresses
-    }
-
-    pub fn get_incoming_timestamp(&self) -> u64 {
-        self.incoming_timestamp
-    }
-
-    pub fn get_server_timestamp(&self) -> u64 {
-        self.server_timestamp
-    }
-}
-
-impl RakCodec for NewIncomingConnection {
-    fn serialize<W: Write>(&self, writer: &mut W) -> Result<(), Error> {
+impl RakCodec<NewIncomingConnection> for NewIncomingConnection {
+    fn serialize<W: Write>(value: &Self, writer: &mut W) -> Result<(), Error> {
         writer.write_u8(NEW_INCOMING_CONNECTION)?;
-        self.server_address.serialize(writer)?;
-        for addr in &self.internal_addresses {
-            addr.serialize(writer)?;
+        SocketAddr::serialize(&value.server_address, writer)?;
+        for addr in &value.internal_addresses {
+            SocketAddr::serialize(addr, writer)?;
         }
-        writer.write_u64::<BigEndian>(self.incoming_timestamp)?;
-        writer.write_u64::<BigEndian>(self.server_timestamp)?;
+        writer.write_u64::<BigEndian>(value.incoming_timestamp)?;
+        writer.write_u64::<BigEndian>(value.server_timestamp)?;
 
         Ok(())
     }
@@ -80,7 +53,7 @@ impl RakCodec for NewIncomingConnection {
         })
     }
 
-    fn size_hint(&self) -> usize {
-        size_of::<u8>() + self.server_address.size_hint() + self.internal_addresses.iter().fold(0, |acc, addr| acc + addr.size_hint()) + size_of::<u64>() + size_of::<u64>()
+    fn size_hint(value: &Self) -> usize {
+        size_of::<u8>() + SocketAddr::size_hint(&value.server_address) + value.internal_addresses.iter().fold(0, |acc, addr| acc + SocketAddr::size_hint(&addr)) + size_of::<u64>() + size_of::<u64>()
     }
 }

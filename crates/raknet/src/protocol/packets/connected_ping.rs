@@ -5,23 +5,13 @@ use std::io::{Error, ErrorKind, Read, Write};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ConnectedPing {
-    timestamp: u64,
+    pub timestamp: u64,
 }
 
-impl ConnectedPing {
-    pub fn new(timestamp: u64) -> Self {
-        Self { timestamp }
-    }
-
-    pub fn get_timestamp(&self) -> u64 {
-        self.timestamp
-    }
-}
-
-impl RakCodec for ConnectedPing {
-    fn serialize<W: Write>(&self, writer: &mut W) -> Result<(), Error> {
+impl RakCodec<ConnectedPing> for ConnectedPing {
+    fn serialize<W: Write>(value: &Self, writer: &mut W) -> Result<(), Error> {
         writer.write_u8(CONNECTED_PING)?;
-        writer.write_u64::<BigEndian>(self.timestamp)?;
+        writer.write_u64::<BigEndian>(value.timestamp)?;
 
         Ok(())
     }
@@ -37,7 +27,7 @@ impl RakCodec for ConnectedPing {
         Ok(Self { timestamp })
     }
 
-    fn size_hint(&self) -> usize {
+    fn size_hint(_: &Self) -> usize {
         size_of::<u8>() + size_of::<u64>()
     }
 }

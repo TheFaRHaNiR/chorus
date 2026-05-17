@@ -6,55 +6,23 @@ use std::net::SocketAddr;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ConnectionRequestAccepted {
-    client_address: SocketAddr,
-    system_index: u16,
-    system_addresses: Vec<SocketAddr>,
-    request_timestamp: u64,
-    timestamp: u64,
+    pub client_address: SocketAddr,
+    pub system_index: u16,
+    pub system_addresses: Vec<SocketAddr>,
+    pub request_timestamp: u64,
+    pub timestamp: u64,
 }
 
-impl ConnectionRequestAccepted {
-    pub fn new(client_address: SocketAddr, system_index: u16, system_addresses: Vec<SocketAddr>, request_timestamp: u64, timestamp: u64) -> Self {
-        Self {
-            client_address,
-            system_index,
-            system_addresses,
-            request_timestamp,
-            timestamp,
-        }
-    }
-
-    pub fn get_client_address(&self) -> SocketAddr {
-        self.client_address
-    }
-
-    pub fn get_system_index(&self) -> u16 {
-        self.system_index
-    }
-
-    pub fn get_system_addresses(&self) -> &Vec<SocketAddr> {
-        &self.system_addresses
-    }
-
-    pub fn get_request_timestamp(&self) -> u64 {
-        self.request_timestamp
-    }
-
-    pub fn get_timestamp(&self) -> u64 {
-        self.timestamp
-    }
-}
-
-impl RakCodec for ConnectionRequestAccepted {
-    fn serialize<W: Write>(&self, writer: &mut W) -> Result<(), Error> {
+impl RakCodec<ConnectionRequestAccepted> for ConnectionRequestAccepted {
+    fn serialize<W: Write>(value: &Self, writer: &mut W) -> Result<(), Error> {
         writer.write_u8(CONNECTION_REQUEST_ACCEPTED)?;
-        self.client_address.serialize(writer)?;
-        writer.write_u16::<BigEndian>(self.system_index)?;
-        for addr in &self.system_addresses {
-            addr.serialize(writer)?;
+        SocketAddr::serialize(&value.client_address, writer)?;
+        writer.write_u16::<BigEndian>(value.system_index)?;
+        for addr in &value.system_addresses {
+            SocketAddr::serialize(addr, writer)?;
         }
-        writer.write_u64::<BigEndian>(self.request_timestamp)?;
-        writer.write_u64::<BigEndian>(self.timestamp)?;
+        writer.write_u64::<BigEndian>(value.request_timestamp)?;
+        writer.write_u64::<BigEndian>(value.timestamp)?;
 
         Ok(())
     }
@@ -90,7 +58,12 @@ impl RakCodec for ConnectionRequestAccepted {
         })
     }
 
-    fn size_hint(&self) -> usize {
-        size_of::<u8>() + self.client_address.size_hint() + size_of::<u16>() + self.system_addresses.iter().fold(0, |acc, addr| acc + addr.size_hint()) + size_of::<u64>() + size_of::<u64>()
+    fn size_hint(value: &Self) -> usize {
+        size_of::<u8>()
+            + SocketAddr::size_hint(&value.client_address)
+            + size_of::<u16>()
+            + value.system_addresses.iter().fold(0, |acc, addr| acc + SocketAddr::size_hint(&addr))
+            + size_of::<u64>()
+            + size_of::<u64>()
     }
 }

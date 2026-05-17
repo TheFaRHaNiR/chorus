@@ -6,42 +6,24 @@ use std::io::{Error, ErrorKind, Read, Write};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct OpenConnectionReply1 {
-    guid: u64,
-    cookie: Option<i32>,
-    mtu: u16,
+    pub guid: u64,
+    pub cookie: Option<i32>,
+    pub mtu: u16,
 }
 
-impl OpenConnectionReply1 {
-    pub fn new(guid: u64, cookie: Option<i32>, mtu: u16) -> Self {
-        Self { guid, cookie, mtu }
-    }
-
-    pub fn get_guid(&self) -> u64 {
-        self.guid
-    }
-
-    pub fn get_cookie(&self) -> Option<i32> {
-        self.cookie
-    }
-
-    pub fn get_mtu(&self) -> u16 {
-        self.mtu
-    }
-}
-
-impl RakCodec for OpenConnectionReply1 {
-    fn serialize<W: Write>(&self, writer: &mut W) -> Result<(), Error> {
+impl RakCodec<OpenConnectionReply1> for OpenConnectionReply1 {
+    fn serialize<W: Write>(value: &Self, writer: &mut W) -> Result<(), Error> {
         writer.write_u8(OPEN_CONNECTION_REPLY_1)?;
         writer.write_all(&MAGIC)?;
-        writer.write_u64::<BigEndian>(self.guid)?;
-        match self.cookie {
+        writer.write_u64::<BigEndian>(value.guid)?;
+        match value.cookie {
             Some(cookie) => {
                 writer.write_u8(1)?;
                 writer.write_i32::<BigEndian>(cookie)?;
             }
             None => writer.write_u8(0)?,
         }
-        writer.write_u16::<BigEndian>(self.mtu)?;
+        writer.write_u16::<BigEndian>(value.mtu)?;
 
         Ok(())
     }
@@ -66,7 +48,7 @@ impl RakCodec for OpenConnectionReply1 {
         Ok(Self { guid, cookie, mtu })
     }
 
-    fn size_hint(&self) -> usize {
-        size_of::<u8>() + MAGIC.len() + size_of::<u64>() + size_of::<u8>() + if matches!(&self.cookie, Some(_)) { size_of::<i32>() } else { 0 } + size_of::<u16>()
+    fn size_hint(value: &Self) -> usize {
+        size_of::<u8>() + MAGIC.len() + size_of::<u64>() + size_of::<u8>() + if matches!(&value.cookie, Some(_)) { size_of::<i32>() } else { 0 } + size_of::<u16>()
     }
 }

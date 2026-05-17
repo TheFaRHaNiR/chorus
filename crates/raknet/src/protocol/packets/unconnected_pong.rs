@@ -6,37 +6,25 @@ use std::io::{Error, ErrorKind, Read, Write};
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct UnconnectedPong {
-    timestamp: u64,
-    guid: u64,
-    message: Vec<u8>,
+    pub timestamp: u64,
+    pub guid: u64,
+    pub message: Vec<u8>,
 }
 
 impl UnconnectedPong {
     pub fn new(timestamp: u64, guid: u64, message: Vec<u8>) -> Self {
         Self { timestamp, guid, message }
     }
-
-    pub fn get_timestamp(&self) -> u64 {
-        self.timestamp
-    }
-
-    pub fn get_guid(&self) -> u64 {
-        self.guid
-    }
-
-    pub fn get_message(&self) -> &Vec<u8> {
-        &self.message
-    }
 }
 
-impl RakCodec for UnconnectedPong {
-    fn serialize<W: Write>(&self, writer: &mut W) -> Result<(), Error> {
+impl RakCodec<UnconnectedPong> for UnconnectedPong {
+    fn serialize<W: Write>(value: &Self, writer: &mut W) -> Result<(), Error> {
         writer.write_u8(UNCONNECTED_PONG)?;
-        writer.write_u64::<BigEndian>(self.timestamp)?;
-        writer.write_u64::<BigEndian>(self.guid)?;
+        writer.write_u64::<BigEndian>(value.timestamp)?;
+        writer.write_u64::<BigEndian>(value.guid)?;
         writer.write_all(&MAGIC)?;
-        writer.write_u16::<BigEndian>(self.message.len() as u16)?;
-        writer.write_all(&self.message)?;
+        writer.write_u16::<BigEndian>(value.message.len() as u16)?;
+        writer.write_all(&value.message)?;
 
         Ok(())
     }
@@ -63,7 +51,7 @@ impl RakCodec for UnconnectedPong {
         Ok(Self { timestamp, guid, message })
     }
 
-    fn size_hint(&self) -> usize {
-        size_of::<u8>() + size_of::<u64>() + size_of::<u64>() + MAGIC.len() + size_of::<u16>() + self.message.len()
+    fn size_hint(value: &Self) -> usize {
+        size_of::<u8>() + size_of::<u64>() + size_of::<u64>() + MAGIC.len() + size_of::<u16>() + value.message.len()
     }
 }

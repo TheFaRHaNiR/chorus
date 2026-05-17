@@ -7,48 +7,26 @@ use std::net::SocketAddr;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct OpenConnectionRequest2 {
-    cookie: Option<i32>,
-    address: SocketAddr,
-    mtu: u16,
-    client: u64,
+    pub cookie: Option<i32>,
+    pub addr: SocketAddr,
+    pub mtu: u16,
+    pub client: u64,
 }
 
-impl OpenConnectionRequest2 {
-    pub fn new(cookie: Option<i32>, address: SocketAddr, mtu: u16, client: u64) -> Self {
-        Self { cookie, address, mtu, client }
-    }
-
-    pub fn get_cookie(&self) -> Option<i32> {
-        self.cookie
-    }
-
-    pub fn get_address(&self) -> SocketAddr {
-        self.address
-    }
-
-    pub fn get_mtu(&self) -> u16 {
-        self.mtu
-    }
-
-    pub fn get_client(&self) -> u64 {
-        self.client
-    }
-}
-
-impl RakCodec for OpenConnectionRequest2 {
-    fn serialize<W: Write>(&self, writer: &mut W) -> Result<(), Error> {
+impl RakCodec<OpenConnectionRequest2> for OpenConnectionRequest2 {
+    fn serialize<W: Write>(value: &Self, writer: &mut W) -> Result<(), Error> {
         writer.write_u8(OPEN_CONNECTION_REQUEST_2)?;
         writer.write_all(&MAGIC)?;
-        match self.cookie {
+        match value.cookie {
             Some(cookie) => {
                 writer.write_i32::<BigEndian>(cookie)?;
                 writer.write_u8(0)?; // no security challenge
             }
             None => (),
         }
-        self.address.serialize(writer)?;
-        writer.write_u16::<BigEndian>(self.mtu)?;
-        writer.write_u64::<BigEndian>(self.client)?;
+        SocketAddr::serialize(&value.addr, writer)?;
+        writer.write_u16::<BigEndian>(value.mtu)?;
+        writer.write_u64::<BigEndian>(value.client)?;
 
         Ok(())
     }
@@ -100,17 +78,17 @@ impl RakCodec for OpenConnectionRequest2 {
         let mtu = reader.read_u16::<BigEndian>()?;
         let client = reader.read_u64::<BigEndian>()?;
 
-        Ok(Self { cookie, address, mtu, client })
+        Ok(Self { cookie, addr: address, mtu, client })
     }
 
-    fn size_hint(&self) -> usize {
+    fn size_hint(value: &Self) -> usize {
         size_of::<u8>()
             + MAGIC.len()
-            + match self.cookie {
+            + match value.cookie {
                 Some(_) => size_of::<i32>() + size_of::<u8>(),
                 None => 0,
             }
-            + self.address.size_hint()
+            + SocketAddr::size_hint(&value.addr)
             + size_of::<u16>()
             + size_of::<u64>()
     }
