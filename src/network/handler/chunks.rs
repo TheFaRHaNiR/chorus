@@ -74,7 +74,12 @@ pub fn update_chunk_order(mut query: Query<(&mut Session, &PlayerEntity, &mut Pl
     }
 }
 
-pub fn send_pending_chunks(mut query: Query<(Entity, &mut Session, &PlayerEntity, &mut Player)>, mut level: ResMut<Level>, registry: Res<BlockRegistry>, mut chunk_sent_writer: MessageWriter<ChunkSentMessage>) {
+pub fn send_pending_chunks(
+    mut query: Query<(Entity, &mut Session, &PlayerEntity, &mut Player)>,
+    mut level: ResMut<Level>,
+    registry: Res<BlockRegistry>,
+    mut chunk_sent_writer: MessageWriter<ChunkSentMessage>,
+) {
     let mut batches: HashMap<Entity, Vec<(i32, i32)>> = HashMap::new();
 
     for (entity, _, _, mut player) in query.iter_mut() {
