@@ -3,13 +3,13 @@ use crate::config::Config;
 use crate::level::{BlockUpdatedMessage, LevelEventMessage, LevelSoundMessage};
 use crate::network::BedrockProtocol;
 use crate::network::bandwidth::BandwidthTracker;
-use crate::network::handler::block::{BlockBreakMessage, BlockPlaceMessage};
+use crate::network::handler::block::{BlockBreakMessage, BlockPlaceMessage, PlayerDropItemMessage};
 use crate::network::handler::chat::{BroadcastMessage, PlayerChatMessage};
 use crate::network::handler::chunks::ChunkSentMessage;
 use crate::network::handler::form::FormResponseMessage;
 use crate::network::handler::inventory::{InventoryCloseMessage, InventoryOpenMessage, PlayerItemHeldMessage};
 use crate::network::handler::login::PlayerLoginMessage;
-use crate::network::handler::play::{PlayerJoinedMessage, PlayerJumpMessage, PlayerMoveMessage, PlayerQuitMessage, PlayerToggleFlightMessage, PlayerToggleSneakMessage, PlayerToggleSprintMessage};
+use crate::network::handler::play::{PlayerItemUseMessage, PlayerJoinedMessage, PlayerJumpMessage, PlayerMoveMessage, PlayerQuitMessage, PlayerToggleFlightMessage, PlayerToggleSneakMessage, PlayerToggleSprintMessage};
 use crate::network::handler::request::PlayerPreLoginMessage;
 use crate::network::handler::resource::ResourcePackResponseMessage;
 use crate::network::handler::setup::PlayerChunkRadiusMessage;
@@ -62,10 +62,12 @@ impl Plugin for Network {
             .add_message::<PlayerToggleSprintMessage>()
             .add_message::<PlayerToggleFlightMessage>()
             .add_message::<PlayerJumpMessage>()
+            .add_message::<PlayerItemUseMessage>()
             .add_message::<ResourcePackResponseMessage>()
             .add_message::<BlockUpdatedMessage>()
             .add_message::<BlockBreakMessage>()
             .add_message::<BlockPlaceMessage>()
+            .add_message::<PlayerDropItemMessage>()
             .add_message::<InventoryOpenMessage>()
             .add_message::<InventoryCloseMessage>()
             .add_message::<PlayerItemHeldMessage>()

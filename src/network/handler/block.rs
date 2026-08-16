@@ -1,5 +1,6 @@
 use crate::block::component::mineable_component::MineableComponent;
 use crate::entity::entity::Entity as PlayerEntity;
+use crate::item::item_stack::ItemStack;
 use crate::level::level::Level;
 use crate::level::{BlockUpdatedMessage, LevelEventMessage, LevelSoundMessage};
 use crate::math::enums::block_face::BlockFace;
@@ -50,6 +51,12 @@ pub struct BlockPlaceMessage {
     pub face: i32,
 }
 
+#[derive(Message, Clone, Debug)]
+pub struct PlayerDropItemMessage {
+    pub entity: Entity,
+    pub item: ItemStack,
+}
+
 pub fn handle_block_actions(
     mut packet_reader: MessageReader<PacketReceivedMessage>,
     mut query: Query<(&Session, &PlayerEntity, &mut Player)>,
@@ -59,6 +66,7 @@ pub fn handle_block_actions(
     mut block_writer: MessageWriter<BlockUpdatedMessage>,
     mut break_writer: MessageWriter<BlockBreakMessage>,
     mut place_writer: MessageWriter<BlockPlaceMessage>,
+    mut drop_writer: MessageWriter<PlayerDropItemMessage>,
 ) {
     for ev in packet_reader.read() {
         let Ok((session, entity, mut player)) = query.get_mut(ev.entity) else {
@@ -95,6 +103,12 @@ pub fn handle_block_actions(
                 }
                 PlayerActionType::PredictDestroyBlock | PlayerActionType::CreativeDestroyBlock => {
                     break_block(ev.entity, &action, entity, &mut player, &mut level, &registry, &mut event_writer, &mut block_writer, &mut break_writer);
+                }
+                PlayerActionType::DropItem => {
+                    drop_writer.write(PlayerDropItemMessage {
+                        entity: ev.entity,
+                        item: *player.inventory.held_item(),
+                    });
                 }
                 _ => {}
             }

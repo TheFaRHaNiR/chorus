@@ -1,5 +1,6 @@
 use crate::command::dispatch::{CommandPreprocessMessage, CommandRequestedMessage};
 use crate::entity::entity::Entity as PlayerEntity;
+use crate::item::item_stack::ItemStack;
 use crate::level::BlockUpdatedMessage;
 use crate::network::BedrockProtocol;
 use crate::network::handler::PacketReceivedMessage;
@@ -192,6 +193,12 @@ pub struct PlayerJumpMessage {
     pub entity: Entity,
 }
 
+#[derive(Message, Clone, Debug)]
+pub struct PlayerItemUseMessage {
+    pub entity: Entity,
+    pub item: ItemStack,
+}
+
 pub fn handle_play(
     mut packet_reader: MessageReader<PacketReceivedMessage>,
     mut chat_writer: MessageWriter<PlayerChatMessage>,
@@ -202,6 +209,7 @@ pub fn handle_play(
     mut sprint_writer: MessageWriter<PlayerToggleSprintMessage>,
     mut flight_writer: MessageWriter<PlayerToggleFlightMessage>,
     mut jump_writer: MessageWriter<PlayerJumpMessage>,
+    mut item_use_writer: MessageWriter<PlayerItemUseMessage>,
     mut form_writer: MessageWriter<FormResponseMessage>,
     mut query: Query<(&mut PlayerEntity, &mut Player, &mut Session, &PlayerIdentity)>,
 ) {
@@ -254,6 +262,13 @@ pub fn handle_play(
 
                 if packet.input_data.contains(&PlayerAuthInputData::StartJumping) {
                     jump_writer.write(PlayerJumpMessage { entity: ev.entity });
+                }
+
+                if packet.input_data.contains(&PlayerAuthInputData::StartUsingItem) {
+                    item_use_writer.write(PlayerItemUseMessage {
+                        entity: ev.entity,
+                        item: *player.inventory.held_item(),
+                    });
                 }
             }
             BedrockProtocol::TextPacket(packet) => handle_text(ev.entity, packet, identity, &mut chat_writer),
