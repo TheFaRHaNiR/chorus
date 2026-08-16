@@ -15,13 +15,14 @@ use crate::network::handler::setup::PlayerChunkRadiusMessage;
 use crate::network::handler::resource::ResourcePackResponseMessage;
 use crate::network::handler::{PacketHandlers, PacketReceivedMessage};
 use crate::network::login::auth::LoginAuthOIDC;
-use crate::network::session::Session;
 use crate::network::session::state::SessionStateChangedMessage;
+use crate::network::session::{PlayerDisconnectMessage, PlayerKickedMessage, Session, detect_session_close};
 use bedrock::network::connection::Connection;
 use bedrock::network::listener::Listener;
 use bedrock::protocol::{ProtoVersion, Unknown};
 use bevy_app::{App, Last, Plugin, PostUpdate, PreUpdate, Startup};
 use bevy_ecs::prelude::*;
+use bevy_ecs::schedule::IntoScheduleConfigs;
 use crossbeam_channel::Receiver;
 use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 use std::str::FromStr;
@@ -43,6 +44,7 @@ impl Plugin for Network {
             .add_plugins(LoginAuthOIDC)
             .add_systems(Startup, Network::init)
             .add_systems(PreUpdate, Network::receive)
+            .add_systems(PostUpdate, detect_session_close.before(Network::flush))
             .add_systems(PostUpdate, Network::flush)
             .add_systems(Last, BandwidthTracker::sample)
             .init_resource::<BandwidthTracker>()
@@ -50,6 +52,8 @@ impl Plugin for Network {
             .add_message::<SessionStateChangedMessage>()
             .add_message::<PlayerJoinedMessage>()
             .add_message::<PlayerQuitMessage>()
+            .add_message::<PlayerKickedMessage>()
+            .add_message::<PlayerDisconnectMessage>()
             .add_message::<PlayerLoginMessage>()
             .add_message::<PlayerPreLoginMessage>()
             .add_message::<PlayerChunkRadiusMessage>()
