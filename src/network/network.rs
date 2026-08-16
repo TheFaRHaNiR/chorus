@@ -5,11 +5,13 @@ use crate::network::BedrockProtocol;
 use crate::network::bandwidth::BandwidthTracker;
 use crate::network::handler::block::{BlockBreakMessage, BlockPlaceMessage};
 use crate::network::handler::chat::{BroadcastMessage, PlayerChatMessage};
+use crate::network::handler::chunks::ChunkSentMessage;
 use crate::network::handler::form::FormResponseMessage;
 use crate::network::handler::inventory::{InventoryCloseMessage, InventoryOpenMessage, PlayerItemHeldMessage};
 use crate::network::handler::login::PlayerLoginMessage;
 use crate::network::handler::play::{PlayerJoinedMessage, PlayerMoveMessage, PlayerQuitMessage};
 use crate::network::handler::request::PlayerPreLoginMessage;
+use crate::network::handler::setup::PlayerChunkRadiusMessage;
 use crate::network::handler::resource::ResourcePackResponseMessage;
 use crate::network::handler::{PacketHandlers, PacketReceivedMessage};
 use crate::network::login::auth::LoginAuthOIDC;
@@ -50,6 +52,7 @@ impl Plugin for Network {
             .add_message::<PlayerQuitMessage>()
             .add_message::<PlayerLoginMessage>()
             .add_message::<PlayerPreLoginMessage>()
+            .add_message::<PlayerChunkRadiusMessage>()
             .add_message::<PlayerMoveMessage>()
             .add_message::<ResourcePackResponseMessage>()
             .add_message::<BlockUpdatedMessage>()
@@ -59,6 +62,7 @@ impl Plugin for Network {
             .add_message::<InventoryCloseMessage>()
             .add_message::<PlayerItemHeldMessage>()
             .add_message::<FormResponseMessage>()
+            .add_message::<ChunkSentMessage>()
             .add_message::<PlayerChatMessage>()
             .add_message::<CommandPreprocessMessage>()
             .add_message::<CommandRequestedMessage>()
