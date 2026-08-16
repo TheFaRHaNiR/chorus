@@ -9,7 +9,7 @@ use crate::network::handler::chunks::ChunkSentMessage;
 use crate::network::handler::form::FormResponseMessage;
 use crate::network::handler::inventory::{InventoryCloseMessage, InventoryOpenMessage, PlayerItemHeldMessage};
 use crate::network::handler::login::PlayerLoginMessage;
-use crate::network::handler::play::{PlayerJoinedMessage, PlayerMoveMessage, PlayerQuitMessage, PlayerToggleFlightMessage, PlayerToggleSneakMessage, PlayerToggleSprintMessage};
+use crate::network::handler::play::{PlayerJoinedMessage, PlayerJumpMessage, PlayerMoveMessage, PlayerQuitMessage, PlayerToggleFlightMessage, PlayerToggleSneakMessage, PlayerToggleSprintMessage};
 use crate::network::handler::request::PlayerPreLoginMessage;
 use crate::network::handler::resource::ResourcePackResponseMessage;
 use crate::network::handler::setup::PlayerChunkRadiusMessage;
@@ -61,6 +61,7 @@ impl Plugin for Network {
             .add_message::<PlayerToggleSneakMessage>()
             .add_message::<PlayerToggleSprintMessage>()
             .add_message::<PlayerToggleFlightMessage>()
+            .add_message::<PlayerJumpMessage>()
             .add_message::<ResourcePackResponseMessage>()
             .add_message::<BlockUpdatedMessage>()
             .add_message::<BlockBreakMessage>()

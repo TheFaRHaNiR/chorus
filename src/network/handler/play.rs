@@ -187,6 +187,11 @@ pub struct PlayerToggleFlightMessage {
     pub flying: bool,
 }
 
+#[derive(Message, Clone, Debug)]
+pub struct PlayerJumpMessage {
+    pub entity: Entity,
+}
+
 pub fn handle_play(
     mut packet_reader: MessageReader<PacketReceivedMessage>,
     mut chat_writer: MessageWriter<PlayerChatMessage>,
@@ -196,6 +201,7 @@ pub fn handle_play(
     mut sneak_writer: MessageWriter<PlayerToggleSneakMessage>,
     mut sprint_writer: MessageWriter<PlayerToggleSprintMessage>,
     mut flight_writer: MessageWriter<PlayerToggleFlightMessage>,
+    mut jump_writer: MessageWriter<PlayerJumpMessage>,
     mut form_writer: MessageWriter<FormResponseMessage>,
     mut query: Query<(&mut PlayerEntity, &mut Player, &mut Session, &PlayerIdentity)>,
 ) {
@@ -244,6 +250,10 @@ pub fn handle_play(
                     flight_writer.write(PlayerToggleFlightMessage { entity: ev.entity, flying: true });
                 } else if packet.input_data.contains(&PlayerAuthInputData::StopFlying) {
                     flight_writer.write(PlayerToggleFlightMessage { entity: ev.entity, flying: false });
+                }
+
+                if packet.input_data.contains(&PlayerAuthInputData::StartJumping) {
+                    jump_writer.write(PlayerJumpMessage { entity: ev.entity });
                 }
             }
             BedrockProtocol::TextPacket(packet) => handle_text(ev.entity, packet, identity, &mut chat_writer),
