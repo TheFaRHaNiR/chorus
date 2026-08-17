@@ -57,6 +57,13 @@ pub struct PlayerDropItemMessage {
     pub item: ItemStack,
 }
 
+#[derive(Message, Clone, Debug)]
+pub struct BlockInteractMessage {
+    pub entity: Entity,
+    pub position: IVec3,
+    pub face: i32,
+}
+
 pub fn handle_block_actions(
     mut packet_reader: MessageReader<PacketReceivedMessage>,
     mut query: Query<(&Session, &PlayerEntity, &mut Player)>,
@@ -67,6 +74,7 @@ pub fn handle_block_actions(
     mut break_writer: MessageWriter<BlockBreakMessage>,
     mut place_writer: MessageWriter<BlockPlaceMessage>,
     mut drop_writer: MessageWriter<PlayerDropItemMessage>,
+    mut interact_writer: MessageWriter<BlockInteractMessage>,
 ) {
     for ev in packet_reader.read() {
         let Ok((session, entity, mut player)) = query.get_mut(ev.entity) else {
@@ -108,6 +116,13 @@ pub fn handle_block_actions(
                     drop_writer.write(PlayerDropItemMessage {
                         entity: ev.entity,
                         item: *player.inventory.held_item(),
+                    });
+                }
+                PlayerActionType::InteractWithBlock => {
+                    interact_writer.write(BlockInteractMessage {
+                        entity: ev.entity,
+                        position: action.position,
+                        face: action.face,
                     });
                 }
                 _ => {}
